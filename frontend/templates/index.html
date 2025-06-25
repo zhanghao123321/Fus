@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/ico.svg" type="image/x-icon">
+    <title>文件上传服务</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="container">
+    <!-- 用户指南弹窗 -->
+    <div id="guide-modal" class="guide-modal">
+        <div class="guide-content">
+            <div class="guide-header">
+                <h2><i class="fas fa-info-circle"></i> 文件上传服务使用指南</h2>
+                <button class="close-btn" aria-label="关闭">&times;</button>
+            </div>
+            <div class="guide-body">
+                <div class="guide-section">
+                    <h3><i class="fas fa-upload"></i> 上传文件或文件夹</h3>
+                    <div class="guide-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <h4>上传文件</h4>
+                            <p>点击左侧"选择文件"按钮，可以选择一个或多个文件进行上传。</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <h4>上传文件夹</h4>
+                            <p>点击右侧"选择文件夹"按钮，可以上传整个文件夹（保持目录结构）。</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <h4>互斥选择</h4>
+                            <p>一次只能选择一种上传方式（文件或文件夹），选择后对应区域会显示绿色对勾。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3><i class="fas fa-clock"></i> 设置过期时间</h3>
+                    <div class="guide-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <h4>永久保存</h4>
+                            <p>选择"永久"选项，文件将一直保留在服务器上。</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <h4>自定义时间</h4>
+                            <p>选择"自定义"选项，设置时间和单位（分钟/小时/天/月/年）。</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <h4 style="color: red;">过期处理</h4>
+                            <p style="color: red;">过期文件将自动从服务器删除，不可恢复。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3><i class="fas fa-paper-plane"></i> 确认上传</h3>
+                    <div class="guide-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <h4>开始上传</h4>
+                            <p>点击"确认上传"按钮开始上传文件或文件夹。</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <h4>进度显示</h4>
+                            <p>上传过程中会显示进度条和文件数量。</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <h4>上传完成</h4>
+                            <p>上传完成后会显示访问链接和过期时间。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tips">
+                    <h4><i class="fas fa-lightbulb"></i> 使用提示</h4>
+                    <ul>
+                        <li>单个文件最大支持 1GB，文件数量无限制。</li>
+                        <li>支持所有常见文件类型：HTML、文档、图片、压缩包等。</li>
+                        <li>文件夹上传时会保留原目录结构，包含index.html/home.html可直接访问</li>
+                        <li>文件上传成功后，可复制链接与他人分享。</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="guide-footer">
+                <button id="start-btn" class="start-btn">开始使用</button>
+                <div class="dont-show">
+                    <input type="checkbox" id="dont-show">
+                    <label for="dont-show">不再显示此指南</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-bar">
+        <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span id="username-display">管理员</span>
+        </div>
+        <button id="help-btn" class="help-btn">
+            <i class="fas fa-question-circle"></i> 使用帮助
+        </button>
+        <a href="/logout" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> 注销
+        </a>
+    </div>
+    <div class="card">
+        <h1><i class="fas fa-cloud-upload-alt"></i> 文件上传</h1>
+        <p class="subtitle">支持HTML、ZIP、JPG、PNG等格式，最大1GB</p>
+
+        <div id="upload-section">
+            <div id="drop-area" class="drop-area">
+                <div class="upload-options">
+                    <div class="upload-option left-option" id="file-option">
+                        <i class="fas fa-file-upload blue-icon"></i>
+                        <p>上传文件</p>
+                        <button id="file-btn">选择文件</button>
+                        <input type="file" id="file-input" hidden multiple>
+                        <i class="fas fa-check-circle selected-option"></i>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="upload-option right-option" id="folder-option">
+                        <i class="fas fa-folder-open green-icon"></i>
+                        <p>上传文件夹</p>
+                        <button id="folder-btn">选择文件夹</button>
+                        <input type="file" id="folder-input" hidden webkitdirectory>
+                        <i class="fas fa-check-circle selected-option"></i>
+                    </div>
+                </div>
+                <p class="file-info" id="file-info"></p>
+            </div>
+
+            <!-- 过期时间设置区域 (初始隐藏) -->
+            <div id="expire-section" class="expire-section">
+                <h2><i class="fas fa-clock"></i> 设置过期时间</h2>
+                <div class="expire-container">
+                    <div class="expire-controls">
+                        <div class="expire-option">
+                            <input type="radio" id="expire-forever" name="expire-type" value="forever" checked>
+                            <label for="expire-forever">永久</label>
+                        </div>
+                        <div class="expire-option">
+                            <input type="radio" id="expire-custom" name="expire-type" value="custom">
+                            <label for="expire-custom">自定义</label>
+                        </div>
+                    </div>
+
+                    <div id="custom-expire" class="custom-expire">
+                        <div class="expire-input-group">
+                            <input type="number" id="expire-value" class="expire-value" min="1" value="1">
+                            <select id="expire-unit" class="expire-select">
+                                <option value="minute">分钟</option>
+                                <option value="hour">小时</option>
+                                <option value="day">天</option>
+                                <option value="month">月</option>
+                                <option value="year">年</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button id="confirm-upload" class="confirm-btn">
+                    <i class="fas fa-paper-plane"></i> 确认上传
+                </button>
+            </div>
+
+            <!-- 上传进度区域 (初始隐藏) -->
+            <div class="progress-container" id="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+                <p class="upload-status">上传中... <span id="progress-percent">0%</span></p>
+                <p class="file-count" id="file-count"></p> <!-- 添加文件计数显示 -->
+            </div>
+        </div>
+
+        <!-- 结果区域 (初始隐藏) -->
+        <div class="result-container" id="result-container">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>文件上传成功!</h2>
+
+            <div class="result-details">
+                <div class="expiry-info">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span id="expiry-text">永不过期</span>
+                </div>
+
+                <div class="link-box">
+                    <input type="text" id="file-url" readonly>
+                    <button id="copy-btn"><i class="fas fa-copy"></i> 复制</button>
+                </div>
+
+                <a href="#" id="download-link" class="download-btn" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> 访问文件
+                </a>
+
+                <button id="new-upload" class="new-upload-btn">
+                    <i class="fas fa-cloud-upload-alt"></i> 上传新文件
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ================= 用户指南弹窗相关代码 =================
+    const guideModal = document.getElementById('guide-modal');
+    const closeBtn = document.querySelector('.close-btn');
+    const startBtn = document.getElementById('start-btn');
+    const helpBtn = document.getElementById('help-btn');
+    const dontShowCheckbox = document.getElementById('dont-show');
+
+    // 检查是否已经关闭过指南
+    function checkFirstVisit() {
+        const guideClosed = localStorage.getItem('guideClosed');
+        if (!guideClosed) {
+            // 首次访问，显示指南
+            setTimeout(() => {
+                guideModal.style.display = 'flex';
+            }, 500);
+        }
+    }
+
+    // 关闭弹窗
+    function closeGuide() {
+        guideModal.style.display = 'none';
+
+        // 如果用户勾选"不再显示"
+        if (dontShowCheckbox.checked) {
+            localStorage.setItem('guideClosed', 'true');
+        }
+    }
+
+    // 事件绑定
+    closeBtn.addEventListener('click', closeGuide);
+    startBtn.addEventListener('click', closeGuide);
+    helpBtn.addEventListener('click', () => {
+        guideModal.style.display = 'flex';
+    });
+
+    // 点击弹窗外部关闭
+    guideModal.addEventListener('click', (e) => {
+        if (e.target === guideModal) {
+            closeGuide();
+        }
+    });
+
+    // 在页面加载时显示用户名
+    document.addEventListener('DOMContentLoaded', function() {
+        // 尝试从localStorage获取用户名
+        const username = localStorage.getItem('username');
+        if (username) {
+            document.getElementById('username-display').textContent = username;
+        } else {
+            // 尝试从cookie获取用户名
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'username') {
+                    document.getElementById('username-display').textContent = decodeURIComponent(value);
+                    localStorage.setItem('username', decodeURIComponent(value));
+                    break;
+                }
+            }
+        }
+    });
+
+    // 页面加载时检查
+    document.addEventListener('DOMContentLoaded', checkFirstVisit);
+
+    // ================= 文件上传相关代码 =================
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('file-input');
+    const folderInput = document.getElementById('folder-input');
+    const fileInfo = document.getElementById('file-info');
+    const expireSection = document.getElementById('expire-section');
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const progressPercent = document.getElementById('progress-percent');
+    const fileCount = document.getElementById('file-count');
+    const resultContainer = document.getElementById('result-container');
+    const fileUrl = document.getElementById('file-url');
+    const copyBtn = document.getElementById('copy-btn');
+    const downloadLink = document.getElementById('download-link');
+    const expireUnit = document.getElementById('expire-unit');
+    const expireValue = document.getElementById('expire-value');
+    const expiryText = document.getElementById('expiry-text');
+    const confirmBtn = document.getElementById('confirm-upload');
+    const expireForever = document.getElementById('expire-forever');
+    const expireCustom = document.getElementById('expire-custom');
+    const customExpire = document.getElementById('custom-expire');
+    const fileBtn = document.getElementById('file-btn');
+    const folderBtn = document.getElementById('folder-btn');
+    const fileOption = document.getElementById('file-option');
+    const folderOption = document.getElementById('folder-option');
+
+    // 初始UI状态
+    customExpire.style.display = 'none';
+    expireSection.style.display = 'none';
+    progressContainer.style.display = 'none';
+    resultContainer.style.display = 'none';
+
+    let selectedFiles = [];
+    let isFolderUpload = false;
+    let folderNameGlobal = "";
+
+    // 初始化过期时间UI
+    updateExpireUI();
+
+    // 事件监听
+    expireForever.addEventListener('change', updateExpireUI);
+    expireCustom.addEventListener('change', updateExpireUI);
+    expireUnit.addEventListener('change', updateExpireUI);
+    expireValue.addEventListener('input', function() {
+        if (this.value < 1) this.value = 1;
+    });
+
+    // 文件上传按钮事件
+    fileBtn.addEventListener('click', () => {
+        folderInput.value = null;
+        folderOption.classList.remove('option-selected');
+        fileInput.click();
+    });
+
+    // 文件夹上传按钮事件
+    folderBtn.addEventListener('click', () => {
+        fileInput.value = null;
+        fileOption.classList.remove('option-selected');
+        folderInput.value = null;
+        folderInput.click();
+    });
+
+    // 文件选择处理
+    fileInput.addEventListener('change', function(e) {
+        if (!e.target.files || e.target.files.length === 0) return;
+
+        fileOption.classList.add('option-selected');
+        folderOption.classList.remove('option-selected');
+        handleFileSelection(e);
+    });
+
+    // 文件夹选择处理
+    folderInput.addEventListener('change', function(e) {
+        if (!e.target.files || e.target.files.length === 0) return;
+
+        folderOption.classList.add('option-selected');
+        fileOption.classList.remove('option-selected');
+        handleFolderSelection(e);
+    });
+
+    // 确认上传按钮
+    confirmBtn.addEventListener('click', uploadFile);
+
+    // 功能函数
+    function updateExpireUI() {
+        if (expireForever.checked) {
+            customExpire.style.display = 'none';
+        } else {
+            customExpire.style.display = 'block';
+        }
+    }
+
+    // 处理文件选择
+    function handleFileSelection(e) {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        resetSelection();
+        isFolderUpload = false;
+        handleFiles(files);
+    }
+
+    // 处理文件夹选择
+    function handleFolderSelection(e) {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        resetSelection();
+        isFolderUpload = true;
+
+        if (files[0].webkitRelativePath) {
+            const folderName = files[0].webkitRelativePath.split('/')[0];
+            folderNameGlobal = folderName;
+
+            let totalSize = 0;
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].size > 1024 * 1024 * 1024) {
+                    alert(`文件 ${files[i].name} 大小超过1GB限制`);
+                    return;
+                }
+                totalSize += files[i].size;
+            }
+
+            fileInfo.textContent = `已选择文件夹: ${folderName} (${files.length} 个文件, 总共 ${formatFileSize(totalSize)})`;
+            selectedFiles = Array.from(files);
+            expireSection.style.display = 'block';
+        } else {
+            alert('无法获取文件夹信息，请使用Chrome浏览器或确保选择了文件夹');
+        }
+    }
+
+    // 处理文件（单个或多个）
+    function handleFiles(files) {
+        if (!files || files.length === 0) return;
+
+        let totalSize = 0;
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].size > 1024 * 1024 * 1024) {
+                alert(`文件 ${files[i].name} 大小超过1GB限制`);
+                return;
+            }
+            totalSize += files[i].size;
+        }
+
+        if (files.length === 1) {
+            fileInfo.textContent = `已选择文件: ${files[0].name} (${formatFileSize(totalSize)})`;
+        } else {
+            fileInfo.textContent = `已选择 ${files.length} 个文件 (总共 ${formatFileSize(totalSize)})`;
+        }
+
+        selectedFiles = Array.from(files);
+        expireSection.style.display = 'block';
+    }
+
+    // 重置选择
+    function resetSelection() {
+        selectedFiles = [];
+        folderNameGlobal = "";
+    }
+
+    // 上传文件
+    function uploadFile() {
+        const username = localStorage.getItem('username') || 'anonymous';
+
+        if (!selectedFiles || selectedFiles.length === 0) {
+            alert('请先选择文件');
+            return;
+        }
+
+        let expireUnitValue = 'forever';
+        let expireValueInput = '0';
+
+        if (expireCustom.checked) {
+            expireUnitValue = expireUnit.value;
+            expireValueInput = document.getElementById('expire-value').value;
+        }
+
+        const formData = new FormData();
+
+        if (isFolderUpload && folderNameGlobal) {
+            formData.append('folder', folderNameGlobal);
+        }
+
+        // 处理所有文件
+        for (let i = 0; i < selectedFiles.length; i++) {
+            formData.append('files', selectedFiles[i]);
+
+            // 如果是文件夹上传，添加路径信息
+            if (isFolderUpload && folderNameGlobal && selectedFiles[i].webkitRelativePath) {
+                const relativePath = selectedFiles[i].webkitRelativePath.replace(folderNameGlobal + '/', '');
+                formData.append('paths', relativePath);
+            }
+        }
+
+        formData.append('expireUnit', expireUnitValue);
+        formData.append('expireValue', expireValueInput);
+
+        expireSection.style.display = 'none';
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+        progressPercent.textContent = '0%';
+        fileCount.textContent = `正在上传 ${selectedFiles.length} 个文件`;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/upload', true);
+
+        const authHeader = localStorage.getItem('authHeader');
+        if (authHeader) {
+            xhr.setRequestHeader('Authorization', authHeader);
+        }
+
+        xhr.upload.addEventListener('progress', e => {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                progressBar.style.width = `${percent}%`;
+                progressPercent.textContent = `${percent}%`;
+            }
+        });
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+
+                    // 检查是否有文件被重命名
+                    if (response.renamed) {
+                        let message = "以下文件已重命名以避免覆盖:\n";
+                        for (const [original, renamed] of Object.entries(response.renamed)) {
+                            message += `• ${original} → ${renamed}\n`;
+                        }
+                        alert(message);
+                    }
+
+                    setTimeout(() => {
+                        showResult(response.url, response.expiry, response.folder);
+                    }, 500);
+                } catch (e) {
+                    console.error("解析响应失败:", e);
+                    alert('上传成功，但解析响应失败');
+                    resetUpload();
+                }
+            } else {
+                alert('上传失败: ' + xhr.statusText);
+                resetUpload();
+            }
+        };
+
+        xhr.onerror = function() {
+            alert('上传出错，请重试');
+            resetUpload();
+        };
+
+        xhr.send(formData);
+    }
+
+    // 新上传按钮
+    document.getElementById('new-upload').addEventListener('click', function() {
+        selectedFiles = [];
+        fileInfo.textContent = '';
+        document.getElementById('expire-forever').checked = true;
+        document.getElementById('expire-custom').checked = false;
+        document.getElementById('expire-value').value = '1';
+        customExpire.style.display = 'none';
+
+        fileOption.classList.remove('option-selected');
+        folderOption.classList.remove('option-selected');
+
+        resultContainer.style.display = 'none';
+        document.getElementById('upload-section').style.display = 'block';
+
+        fileInput.value = '';
+        folderInput.value = '';
+    });
+
+    // 显示结果
+    function showResult(url, expiry, folder) {
+        document.getElementById('upload-section').style.display = 'none';
+        progressContainer.style.display = 'none';
+
+        const existingFolderInfo = document.querySelector('.folder-info');
+        if (existingFolderInfo) {
+            existingFolderInfo.remove();
+        }
+
+        if (folder) {
+            const folderInfo = document.createElement('div');
+            folderInfo.className = 'folder-info';
+            folderInfo.innerHTML = `<i class="fas fa-folder"></i> 文件夹名称: ${folder}`;
+            document.querySelector('.result-details').prepend(folderInfo);
+        }
+
+        const fullUrl = window.location.origin + url;
+        fileUrl.value = fullUrl;
+        downloadLink.href = url;
+
+        if (expiry && expiry !== "0001-01-01 00:00:00") {
+            expiryText.textContent = `过期时间: ${expiry}`;
+            expiryText.style.color = '#e74c3c';
+        } else {
+            expiryText.textContent = '永不过期';
+            expiryText.style.color = '#2ecc71';
+        }
+
+        resultContainer.style.display = 'block';
+    }
+
+    // 重置上传
+    function resetUpload() {
+        selectedFiles = [];
+        fileInfo.textContent = '';
+        expireSection.style.display = 'none';
+        progressContainer.style.display = 'none';
+        resultContainer.style.display = 'none';
+        document.getElementById('upload-section').style.display = 'block';
+        fileInput.value = '';
+        folderInput.value = '';
+    }
+
+    // 复制按钮
+    copyBtn.addEventListener('click', () => {
+        fileUrl.select();
+        document.execCommand('copy');
+
+        const originalText = copyBtn.innerHTML;
+        const originalClass = copyBtn.className;
+
+        copyBtn.innerHTML = '<i class="fas fa-check"></i> 已复制';
+        copyBtn.className = originalClass + ' copied';
+
+        setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+            copyBtn.className = originalClass;
+        }, 2000);
+    });
+
+    // 格式化文件大小
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        else if (bytes < 1073741824) return (bytes / 1048576).toFixed(1) + ' MB';
+        else return (bytes / 1073741824).toFixed(1) + ' GB';
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/ico.svg" type="image/x-icon">
+    <title>登录 - 文件上传服务</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 添加错误消息样式 */
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+            border-left: 4px solid #dc3545;
+        }
+        .error-message i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        /* 添加动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card login-card">
+        <div class="login-header">
+            <i class="fas fa-lock"></i>
+            <h1>文件上传系统</h1>
+            <p>请输入管理员凭据</p>
+        </div>
+
+        <!-- 后端错误消息 -->
+        {{if .error}}
+        <div class="error-message">
+            <i class="fas fa-exclamation-circle"></i> {{.error}}
+        </div>
+        {{end}}
+
+        <!-- 前端错误消息容器 -->
+        <div id="js-error-message" class="error-message" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i> <span id="error-text"></span>
+        </div>
+
+        <form id="login-form" action="/login" method="POST">
+            <div class="input-group">
+                <label for="username"><i class="fas fa-user"></i> 用户名</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password"><i class="fas fa-key"></i> 密码</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> 登录
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // 清除之前的错误
+        hideError();
+
+        // 简单的前端验证
+        if (!username || !password) {
+            showError('用户名和密码不能为空');
+            return;
+        }
+
+        try {
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // 存储用户名到localStorage
+                localStorage.setItem('username', username);
+
+                // 重定向到首页
+                window.location.href = result.redirect || '/';
+            } else {
+                // 显示错误消息
+                showError(result.error || '登录失败，请检查用户名和密码');
+            }
+        } catch (error) {
+            console.error('登录请求失败:', error);
+            showError('网络错误，请稍后重试');
+        }
+    });
+
+    function showError(message) {
+        const errorContainer = document.getElementById('js-error-message');
+        const errorText = document.getElementById('error-text');
+        const form = document.getElementById('login-form');
+
+        errorText.textContent = message;
+        errorContainer.style.display = 'flex';
+
+        // 添加抖动效果
+        form.classList.add('shake');
+        setTimeout(() => form.classList.remove('shake'), 500);
+
+        // 滚动到错误消息
+        errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function hideError() {
+        const errorContainer = document.getElementById('js-error-message');
+        errorContainer.style.display = 'none';
+    }
+
+    // 页面加载时自动聚焦用户名输入框
+    window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('username').focus();
+
+        // 如果有后端错误，滚动到错误消息
+        if (document.querySelector('.error-message')) {
+            document.querySelector('.error-message').scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+</script>
+</body>
+</html>

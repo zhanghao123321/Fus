@@ -1,0 +1,996 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 700px;
+}
+
+.card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    padding: 40px;
+    text-align: center;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+h2 {
+    color: #2c3e50;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.subtitle {
+    color: #7f8c8d;
+    margin-bottom: 30px;
+}
+
+.drop-area {
+    border: 3px dashed #3498db;
+    border-radius: 15px;
+    padding: 40px 20px;
+    transition: all 0.3s;
+    cursor: pointer;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.drop-area.highlight {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-color: #2980b9;
+}
+
+.drop-area i {
+    font-size: 64px;
+    color: #3498db;
+    margin-bottom: 20px;
+}
+
+.drop-area p {
+    margin: 10px 0;
+    color: #34495e;
+}
+
+button {
+    background: #34a4db;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s;
+    margin-top: 15px;
+}
+
+button:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.expire-container {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    padding: 30px;
+    margin: 25px 0;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.expire-container:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3498db, #9b59b6);
+}
+
+.expire-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.expire-option {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.expire-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.expire-option label {
+    display: block;
+    padding: 14px 32px;
+    background: white;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #34495e;
+    transition: all 0.3s;
+    border: 2px solid #e0e0e0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    min-width: 100px;
+    text-align: center;
+}
+
+.expire-option input[type="radio"]:checked + label {
+    background: linear-gradient(135deg, #3498db, #9b59b6);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+    transform: translateY(-2px);
+}
+
+.expire-option label:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.custom-expire {
+    background: white;
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
+    animation: fadeIn 0.4s;
+    border: 1px solid #f0f0f0;
+}
+
+.expire-input-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.expire-value {
+    padding: 16px;
+    border-radius: 12px;
+    border: 2px solid #3498db;
+    width: 120px;
+    font-size: 18px;
+    text-align: center;
+    font-weight: 600;
+    color: #2c3e50;
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.15);
+    transition: all 0.3s;
+}
+
+.expire-value:focus {
+    border-color: #9b59b6;
+    box-shadow: 0 4px 15px rgba(155, 89, 182, 0.25);
+}
+
+.expire-select {
+    padding: 16px 50px 16px 20px;
+    border-radius: 12px;
+    border: 2px solid #3498db;
+    background-color: white;
+    font-size: 18px;
+    color: #34495e;
+    min-width: 160px;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233498db' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.15);
+    transition: all 0.3s;
+}
+
+.expire-select:focus {
+    border-color: #9b59b6;
+    box-shadow: 0 4px 15px rgba(155, 89, 182, 0.25);
+}
+
+/* 结果区域过期信息样式 */
+.expiry-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 25px 0;
+    padding: 20px;
+    border-radius: 16px;
+    background: white;
+    font-size: 20px;
+    font-weight: 600;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    border: 2px dashed #3498db;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.2); }
+    70% { box-shadow: 0 0 0 15px rgba(52, 152, 219, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
+}
+
+/* 响应式调整 */
+@media (max-width: 600px) {
+    .expire-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .expire-option label {
+        text-align: center;
+    }
+
+    .expire-input-group {
+        flex-direction: column;
+    }
+
+    .expire-value, .expire-select {
+        width: 100%;
+    }
+}
+
+.confirm-btn {
+    background: #9b59b6;
+    padding: 15px 40px;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.confirm-btn:hover {
+    background: #8e44ad;
+}
+
+/* 进度条样式 */
+.progress-container {
+    width: 100%;
+    background: #ecf0f1;
+    border-radius: 10px;
+    margin: 20px 0;
+    display: none;
+    overflow: hidden;
+    height: 20px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    border-radius: 10px;
+    width: 0;
+    transition: width 0.3s;
+}
+
+.upload-status {
+    margin-top: 15px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+/* 结果区域 */
+.result-container {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+.success-icon {
+    font-size: 80px;
+    color: #2ecc71;
+    margin: 20px 0;
+    animation: bounceIn 0.8s;
+}
+
+.result-details {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 20px;
+}
+
+.expiry-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+    padding: 12px;
+    border-radius: 8px;
+    background: white;
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.link-box {
+    display: flex;
+    margin: 25px 0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.link-box input {
+    flex: 1;
+    padding: 15px 20px;
+    border: none;
+    background: white;
+    font-size: 16px;
+    min-width: 0;
+}
+
+.link-box button {
+    border-radius: 0;
+    margin: 0;
+    padding: 0 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* 居中内容 */
+    gap: 8px;
+    min-width: 120px; /* 设置最小宽度 */
+    box-sizing: border-box; /* 包含内边距 */
+}
+
+/* 新上传按钮样式 */
+.new-upload-btn {
+    background: linear-gradient(135deg, #3498db, #2c3e50);
+    color: white;
+    border: none;
+    padding: 16px 40px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s;
+    margin-top: 25px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+}
+
+.new-upload-btn:hover {
+    background: linear-gradient(135deg, #2980b9, #1a2530);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.5);
+}
+
+/* 添加复制按钮动画效果 */
+@keyframes copyPulse {
+    0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.5); }
+    100% { box-shadow: 0 0 0 15px rgba(46, 204, 113, 0); }
+}
+
+.link-box button.copied {
+    background: #2ecc71 !important;
+    animation: copyPulse 0.5s ease-out;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    background: #3498db;
+    padding: 15px 40px;
+    border-radius: 50px;
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s;
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.download-btn:hover {
+    background: #2980b9;
+    transform: translateY(-3px);
+    box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
+}
+
+.new-upload-btn {
+    background: #95a5a6;
+    margin-top: 25px;
+    padding: 12px 30px;
+}
+
+.new-upload-btn:hover {
+    background: #7f8c8d;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+/* 响应式调整 */
+@media (max-width: 600px) {
+    .card {
+        padding: 25px;
+    }
+
+    .expire-controls {
+        flex-direction: column;
+    }
+
+    .expire-select, .expire-value {
+        width: 100%;
+    }
+
+    .link-box {
+        flex-direction: column;
+    }
+
+    .link-box input {
+        padding: 15px;
+        width: 100%;
+    }
+
+    .link-box button {
+        padding: 15px;
+        width: 100%;
+        justify-content: center;
+    }
+}
+.header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: #3498db;
+}
+
+.user-info i {
+    font-size: 24px;
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #e74c3c;
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+
+.logout-btn:hover {
+    background: rgba(231, 76, 60, 0.1);
+    transform: translateY(-2px);
+}
+/*login*/
+.login-card {
+    max-width: 100%;
+    padding: 40px;
+    text-align: center;
+    margin-left: 15%;
+}
+
+.login-header {
+    margin-bottom: 30px;
+}
+
+.login-header i {
+    font-size: 60px;
+    color: #3498db;
+    margin-bottom: 15px;
+}
+
+.login-header h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.login-header p {
+    color: #7f8c8d;
+    font-size: 18px;
+}
+
+.input-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.input-group input:focus {
+    border-color: #3498db;
+    box-shadow: 0 3px 15px rgba(52, 152, 219, 0.2);
+}
+
+.login-btn {
+    background: linear-gradient(135deg, #3498db, #2c3e50);
+    color: white;
+    border: none;
+    padding: 16px 40px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s;
+    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+    width: 100%;
+    justify-content: center;
+}
+
+.login-btn:hover {
+    background: linear-gradient(135deg, #2980b9, #1a2530);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.5);
+}
+
+.error-message {
+    color: #e74c3c;
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(231, 76, 60, 0.1);
+    border-radius: 10px;
+    display: none;
+}
+
+/* 添加文件夹信息样式 */
+.folder-info {
+    background-color: #e3f2fd;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.folder-info i {
+    margin-right: 8px;
+    color: #1976d2;
+}
+
+.folder-info span {
+    font-weight: bold;
+}
+
+/* 滚动条美化 - 只保留这部分在HTML中 */
+.guide-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.guide-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 0 0 12px 0;
+}
+
+.guide-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    border-radius: 4px;
+}
+
+.guide-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #2980b9, #27ae60);
+}
+
+/* ================ 从index.html迁移的样式 ================ */
+/* 添加新的样式 */
+.upload-options {
+    display: flex;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px dashed #ccc;
+}
+
+.upload-option {
+    flex: 1;
+    padding: 25px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    position: relative;
+}
+
+.upload-option:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-3px);
+}
+
+.blue-icon {
+    color: #3498db;
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.green-icon {
+    color: #2ecc71;
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.upload-option p {
+    margin: 10px 0 15px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.upload-option button {
+    padding: 10px 20px;
+    background: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.upload-option button:hover {
+    background: #2980b9;
+}
+
+.right-option button {
+    background: #2ecc71;
+}
+
+.right-option button:hover {
+    background: #27ae60;
+}
+
+.divider {
+    width: 2px;
+    background: repeating-linear-gradient(
+            180deg,
+            #ffd700,
+            #ffd700 5px,
+            transparent 5px,
+            transparent 10px
+    );
+    margin: 20px 0;
+}
+
+.file-info {
+    margin-top: 20px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    width: 100%;
+    text-align: center;
+}
+
+/* 调整原有样式 */
+.drop-area {
+    padding: 20px;
+    text-align: center;
+}
+
+/* 选择状态指示 */
+.selected-option {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #27ae60;
+    font-size: 24px;
+    display: none;
+}
+
+/* 用户指南弹窗样式 */
+.guide-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.guide-content {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalFade 0.5s ease;
+}
+
+@keyframes modalFade {
+    from { opacity: 0; transform: translateY(-50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.guide-header {
+    background: linear-gradient(135deg, #3498db, #2ecc71);
+    color: white;
+    padding: 20px;
+    border-radius: 2px 2px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.guide-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+}
+
+.close-btn:hover {
+    background: none !important;
+    box-shadow: none !important;
+    transform: scale(1.1);
+    outline: none;
+}
+
+.guide-body {
+    padding: 25px;
+}
+
+.guide-section {
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #eee;
+}
+
+.guide-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.guide-section h3 {
+    color: #3498db;
+    margin-top: 0;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.guide-section h3 i {
+    margin-right: 10px;
+    width: 30px;
+    height: 30px;
+    background: #3498db;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.guide-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.step {
+    flex: 1;
+    min-width: 200px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.step-number {
+    background: #3498db;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.step h4 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+}
+
+.step p {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.tips {
+    background: #fffde7;
+    border-left: 4px solid #ffc107;
+    padding: 15px;
+    border-radius: 0 4px 4px 0;
+    margin-top: 20px;
+}
+
+.tips h4 {
+    margin-top: 0;
+    color: #e65100;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+}
+
+.tips h4 i {
+    margin-right: 10px;
+    color: #ff9800;
+    font-size: 20px;
+}
+
+.tips ul {
+    margin: 10px 0 0 20px;
+    padding: 0;
+}
+
+.tips li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.guide-footer {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 0 0 12px 12px;
+}
+
+.start-btn {
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.start-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.guide-footer p {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #777;
+}
+
+.dont-show {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dont-show input {
+    margin-right: 8px;
+}
+
+/* 选择状态指示 - 修复选择器优先级 */
+.upload-option .selected-option {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #27ae60;
+    font-size: 24px;
+    display: none;
+}
+
+.upload-option.option-selected .selected-option {
+    display: block !important; /* 确保覆盖其他样式 */
+}
+
+/* 确保上传选项悬停效果 */
+.upload-option:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-3px);
+}
+
+/* 修复过期时间区域显示 */
+#expire-section {
+    display: none;
+    margin-top: 20px; /* 添加间距 */
+}
+
+/* 添加过渡效果 */
+.upload-option, .upload-option button {
+    transition: all 0.3s ease;
+}
