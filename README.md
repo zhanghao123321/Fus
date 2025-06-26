@@ -1,7 +1,7 @@
 ### Fus
 
 ```shell
-结构如下：
+# 结构如下：
 backend/
 ├── config/
 │   └── config.go        # 配置加载
@@ -28,5 +28,16 @@ frontend/
 
 storage/
 ├── └── data/            # 上传文件存放位置
+
+
+# Docker部署方式
+git clone https://github.com/zhanghao123321/Fus.git
+cd Fus
+docker build -t fus-app:latest .
+docker run -d  --name fus -p 8888:8080 
+     -e PORT=8080 \
+     -e AUTH_USERS="admin:admin,zz:zz" \
+     -v /data/storage:/storage/data \
+     fus-app:latest 
 ```
 
