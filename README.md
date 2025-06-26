@@ -1,7 +1,7 @@
 ### Fus
 
 ```shell
-# 结构如下：
+# 项目结构：
 backend/
 ├── config/
 │   └── config.go        # 配置加载
@@ -28,7 +28,6 @@ frontend/
 
 storage/
 ├── └── data/            # 上传文件存放位置
-
 
 # Docker部署方式
 git clone https://github.com/zhanghao123321/Fus.git
