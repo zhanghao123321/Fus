@@ -5,10 +5,11 @@ import (
 	"Fus/backend/config"
 	"Fus/backend/handlers"
 	"Fus/backend/middleware"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -26,21 +27,26 @@ func main() {
 	r.LoadHTMLGlob("./frontend/templates/*")
 	r.Static("/static", "./frontend/static")
 
-	// 中间件
-	r.Use(middleware.AuthMiddleware())
+	publicRoutes := r.Group("/")
+	{
+		// 文件访问路由
+		publicRoutes.GET("/:username/*filepath", handlers.FileAccess)
 
-	// 特殊路由处理
-	r.Handle("HEAD", "/login", func(c *gin.Context) {
-		c.Status(http.StatusOK)
-	})
+		publicRoutes.GET("/login", handlers.LoginPage)
+		publicRoutes.POST("/login", handlers.Login)
 
-	// 路由设置
-	r.GET("/login", handlers.LoginPage)
-	r.POST("/login", handlers.Login)
-	r.GET("/", handlers.HomePage)
-	r.POST("/upload", handlers.Upload)
-	r.GET("/:username/*filepath", handlers.FileAccess)
-	r.GET("/logout", handlers.Logout)
+		publicRoutes.Handle("HEAD", "/login", func(c *gin.Context) {
+			c.Status(http.StatusOK)
+		})
+	}
+
+	authRoutes := r.Group("/")
+	authRoutes.Use(middleware.AuthMiddleware())
+	{
+		authRoutes.GET("/", handlers.HomePage)
+		authRoutes.POST("/upload", handlers.Upload)
+		authRoutes.GET("/logout", handlers.Logout)
+	}
 
 	// 启动清理任务
 	go cleanup.StartCleanup()

@@ -13,15 +13,8 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// OPTIONS 请求通常用于CORS预检，不进行认证
 		if c.Request.Method == "OPTIONS" {
-			c.Next()
-			return
-		}
-
-		// 公开路径不需要认证
-		if strings.HasPrefix(c.Request.URL.Path, "/static") ||
-			strings.HasPrefix(c.Request.URL.Path, "/files") ||
-			c.Request.URL.Path == "/login" {
 			c.Next()
 			return
 		}
@@ -42,12 +35,14 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		if !strings.HasPrefix(authHeader, "Basic ") {
+			// Authorization头格式不正确
 			c.Redirect(http.StatusFound, "/login")
 			c.Abort()
 			return
 		}
 
-		decoded, err := base64.StdEncoding.DecodeString(authHeader[6:])
+		// 解码Basic认证的凭据
+		decoded, err := base64.StdEncoding.DecodeString(authHeader[len("Basic "):])
 		if err != nil {
 			c.Redirect(http.StatusFound, "/login")
 			c.Abort()
@@ -64,6 +59,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		user := credParts[0]
 		pass := credParts[1]
 
+		// 验证用户名和密码
 		storedPass, exists := config.Credentials[user]
 		if !exists || subtle.ConstantTimeCompare([]byte(pass), []byte(storedPass)) != 1 {
 			c.Redirect(http.StatusFound, "/login")
@@ -71,6 +67,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		// 认证通过
 		c.Next()
 	}
 }
