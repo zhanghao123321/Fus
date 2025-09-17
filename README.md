@@ -28,9 +28,9 @@ frontend/
 storage/
 ├── └── data/            # 上传文件存放位置
 ```
-### Docker部署
+### Docker
 ```
-# Docker部署方式
+# Docker部署：
 git clone https://github.com/zhanghao123321/Fus.git
 cd Fus
 docker build -t fus-app:latest .
